@@ -10,9 +10,9 @@ import torch.distributed
 
 from PSM.src.utils import *
 from train import finetune, evaluate, pretrain, supervised
-from datasets import get_dataloaders                   # 数据集加载
-from utils import *                                    # 一些功能性函数
-import model.network as models                         # resnet骨干
+from datasets import get_dataloaders              
+from utils import *                                    
+import model.network as models                        
 from model.psm import PSM
 
 
@@ -247,7 +247,7 @@ def main():
         finetune(base_encoder, dataloaders, args)
         # Evaluate the pretrained model and trained supervised head
 
-        # base_encoder = load_finetune(base_encoder, args)             # 直接用微调好的模型最后测试
+        # base_encoder = load_finetune(base_encoder, args)            
         test_loss, test_acc, test_acc_top5 = evaluate(
             base_encoder, dataloaders, 'test', args.finetune_epochs, args)
         print('[Test] loss {:.4f} - acc {:.4f} - acc_top5 {:.4f}'.format(
