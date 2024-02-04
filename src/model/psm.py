@@ -319,7 +319,7 @@ class NNMemoryBankModuleNormMultiKeep(MemoryBankModule):
         >>>
         >>> loss = 0.5 * (criterion(z0, p1) + criterion(z1, p0))
     """
-    def __init__(self, size: int = 2 ** 16, topk=5):                         # 2**16设置的是bank大小
+    def __init__(self, size: int = 2 ** 16, topk=5):                         
         super(NNMemoryBankModuleNormMultiKeep, self).__init__(size)
         self.topk = topk
     def set_topk(self, new_topk):
@@ -346,35 +346,28 @@ class NNMemoryBankModuleNormMultiKeep(MemoryBankModule):
             torch.einsum("nd,md->nm", output_normed, bank_normed)
 
         index_nearest_neighbours = torch.topk(similarity_matrix, self.topk)[1].reshape(-1)
-        # 256*5=1280， 256个每个都找最大的5个，一共1280个
+
 
 
         nearest_neighbours = torch.index_select(bank, dim=0, index=index_nearest_neighbours)
         b, dim = output.shape
 
         res = torch.cat((output.unsqueeze(dim=1), nearest_neighbours.reshape(b, self.topk, dim)), dim=1).reshape(-1, dim)
-        # 原本256个+新选出来的1280个=1536*256
+  
 
         return nearest_neighbours, res ,output,bank_normed
-        # 1280*256     1536*256        注意这里的nearest_neighbours不是直接cat到后面的，是紧跟着每一个正样本
-        """
-        pos 
-        near*5
-        pos2
-        near*5        所以后面的label要那样计算
-        """
+     
 
 def select_neg_mask(logit,k):
     device = logit.device
-    # 初始化一个列表，用于存储每行对应区间的元素
     a=logit.shape[0]
     b=logit.shape[1]
     negative_mask = torch.ones((a,b), dtype=bool)
 
     selected_rows = []
-    # 逐行获取每行的对应区间元素，并存储在selected_rows列表中
-    for i in range(logit.shape[0]):  # 遍历每一行
-        negative_mask[i, i*k:i*k+k]=0  # 获取对应区间的元素
+   
+    for i in range(logit.shape[0]):  
+        negative_mask[i, i*k:i*k+k]=0  
 
     # neg = logit.masked_select(negative_mask).view(a, -1)
 
@@ -388,9 +381,8 @@ def select_pos_mask(logit,k):
     negative_mask = torch.zeros((a,b), dtype=bool)
 
     selected_rows = []
-    # 逐行获取每行的对应区间元素，并存储在selected_rows列表中
-    for i in range(logit.shape[0]):  # 遍历每一行
-        negative_mask[i, i*k:i*k+k]=1  # 获取对应区间的元素
+    for i in range(logit.shape[0]): 
+        negative_mask[i, i*k:i*k+k]=1  
 
     # pos = logit.masked_select(negative_mask).view(a, -1)
     return  negative_mask
