@@ -1,7 +1,6 @@
 # PSM
 Potential Sample Mining
 
-
-We will further refine the code and write clear comments.
+Pre-trained and fine-tuned model provided in checkpoint
 
 
